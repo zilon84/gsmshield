@@ -22,6 +22,7 @@ class SIMCOM900 : public virtual GSM
     boolean readCall(char* number, int nlength);
     boolean call(char* number, unsigned int milliseconds);
 	char forceON();
+    boolean sleepMode(boolean enable);
     virtual int read(char* result, int resultlength);
 	virtual uint8_t read();
     int readCellData(int &mcc, int &mnc, long &lac, long &cellid);

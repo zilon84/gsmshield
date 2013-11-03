@@ -41,6 +41,17 @@ char SIMCOM900::forceON(){
 	return ret_val;
 }
 
+boolean SIMCOM900::sleepMode(boolean enable)
+{
+	SimpleWrite(F("AT+SCLKS="));
+	SimpleWrite(enable?F("1"):F("0"));
+
+	if (gsm.WaitResp(5000, 50, "OK") != RX_FINISHED_STR_NOT_RECV)
+		return 0;
+	else
+    		return 1;
+}
+
 int SIMCOM900::configandwait(char* pin)
 {
   int connCode;
