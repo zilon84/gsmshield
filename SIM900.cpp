@@ -43,13 +43,25 @@ char SIMCOM900::forceON(){
 
 boolean SIMCOM900::sleepMode(boolean enable)
 {
-	SimpleWrite(F("AT+SCLKS="));
-	SimpleWrite(enable?F("1"):F("0"));
+	Serial.println("Trying to enter sleepmode");
+	SendATCmdWaitResp("AT+CSCLK?", 5000, 100, "OK", 1);
 
-	if (gsm.WaitResp(5000, 50, "OK") != RX_FINISHED_STR_NOT_RECV)
-		return 0;
-	else
-    		return 1;
+	if (enable) {
+		if (AT_RESP_OK == SendATCmdWaitResp("AT+CSCLK=2",
+					5000, 100, "OK", 1)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else {
+
+		if (AT_RESP_OK == SendATCmdWaitResp("AT+CSCLK=0", 
+					5000, 100, "OK", 1)) {
+                        return 1;
+                } else {
+                        return 0;
+                }
+	}
 }
 
 int SIMCOM900::configandwait(char* pin)
