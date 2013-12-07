@@ -84,12 +84,12 @@ int GSM::begin(long baud_rate){
 		switch (i) {
 			case 0:
 			  _cell.begin(1200);
-			  _cell.print(F("AT+IPR=1200\r"));
+			  _cell.print(F("AT+IPR=4800\r"));
 			  break;
 			  
 			case 1:
 			  _cell.begin(2400);
-			  _cell.print(F("AT+IPR=2400\r"));
+			  _cell.print(F("AT+IPR=4800\r"));
 			  break;
 			  
 			case 2:
@@ -99,27 +99,27 @@ int GSM::begin(long baud_rate){
 			  
 			case 3:
 			  _cell.begin(9600);
-			  _cell.print(F("AT+IPR=9600\r"));
+			  _cell.print(F("AT+IPR=4800\r"));
 			  break;
 			   
 			case 4:
 			  _cell.begin(19200);
-			  _cell.print(F("AT+IPR=19200\r"));
+			  _cell.print(F("AT+IPR=4800\r"));
 			  break;
 			  
 			case 5:
 			  _cell.begin(38400);
-			  _cell.print(F("AT+IPR=384000\r"));
+			  _cell.print(F("AT+IPR=4800\r"));
 			  break;
 			  
 			case 6:
 			  _cell.begin(57600);
-			  _cell.print(F("AT+IPR=57600\r"));
+			  _cell.print(F("AT+IPR=4800\r"));
 			  break;
 			  
 			case 7:
 			  _cell.begin(115200);
-			  _cell.print(F("AT+IPR=115200\r"));
+			  _cell.print(F("AT+IPR=4800\r"));
 			  break;
 			}	
 		}
