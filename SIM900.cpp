@@ -43,11 +43,13 @@ char SIMCOM900::forceON(){
 
 boolean SIMCOM900::sleepMode(boolean enable)
 {
-	Serial.println("Trying to enter sleepmode");
+#ifdef DEBUG_ON
+	debug.println("Trying to enter sleepmode");
+#endif
 	SendATCmdWaitResp("AT+CSCLK?", 5000, 100, "OK", 1);
 
 	if (enable) {
-		if (AT_RESP_OK == SendATCmdWaitResp("AT+CSCLK=2",
+		if (AT_RESP_OK == SendATCmdWaitResp("AT+CSCLK=1",
 					5000, 100, "OK", 1)) {
 			return 1;
 		} else {
@@ -109,7 +111,9 @@ int SIMCOM900::read(char* result, int resultlength)
 	for(i=0; i<resultlength;i++){
 		temp=gsm.read();
 		if(temp>0){
-			Serial.print(temp);
+#ifdef	DEBUG_ON	
+			debug.print(temp);
+#endif
 			result[i]=temp;
 		}
 	}
@@ -217,8 +221,8 @@ boolean SIMCOM900::readSMS(char* msg, int msglength, char* number, int nlength)
 	#endif
     SimpleWrite(F("AT+CMGD="));
 	SimpleWriteln(index);
-	// Serial.print("VAL= ");
-	// Serial.println(index);
+	// debug.print("VAL= ");
+	// debug.println(index);
     gsm.WaitResp(5000, 50, "OK"); 
     return true;
   };
@@ -370,7 +374,9 @@ void SIMCOM900::SimpleRead()
 	if(_cell.available()>0){
 		datain=_cell.read();
 		if(datain>0){
-			Serial.print(datain);
+#ifdef DEBUG_ON
+			debug.print(datain);
+#endif
 		}
 	}
 }
@@ -421,7 +427,9 @@ void SIMCOM900::WhileSimpleRead()
 	while(_cell.available()>0){
 		datain=_cell.read();
 		if(datain>0){
-			Serial.print(datain);
+#ifdef DEBUG_ON
+			debug.print(datain);
+#endif
 		}
 	}
 }
@@ -480,6 +488,7 @@ byte GSM::CheckRegistration(void)
 
   if (CLS_FREE != GetCommLineStatus()) return (REG_COMM_LINE_BUSY);
   SetCommLineStatus(CLS_ATCMD);
+ 
   _cell.println(F("AT+CREG?"));
   // 5 sec. for initial comm tmout
   // 50 msec. for inter character timeout
@@ -962,11 +971,12 @@ char GSM::ComparePhoneNumber(byte position, char *phone_number)
   ret_val = 0; // numbers are not the same so far
   if (position == 0) return (-3);
   if (1 == GetPhoneNumber(position, sim_phone_number)) {
-  Serial.print("CHIAMANTE ");
-  Serial.println(phone_number);
-  Serial.print("SALVATO ");
-  Serial.println(sim_phone_number);
-  
+#ifdef DEBUG_ON
+  debug.print("CHIAMANTE ");
+  debug.println(phone_number);
+  debug.print("SALVATO ");
+  debug.println(sim_phone_number);
+#endif
     // there is a valid number at the spec. SIM position
     // -------------------------------------------------
     if (0 == strcmp(phone_number, sim_phone_number)) {

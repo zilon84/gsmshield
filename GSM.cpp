@@ -55,7 +55,7 @@ int GSM::begin(long baud_rate){
 		if (AT_RESP_ERR_NO_RESP == SendATCmdWaitResp("AT", 500, 100, "OK", 5)&&!turnedON) {		//check power
 	    // there is no response => turn on the module
 			#ifdef DEBUG_ON
-				Serial.println("DB:NO RESP");
+				debug.println("DB:NO RESP");
 			#endif
 			// generate turn on pulse
 			digitalWrite(GSM_ON, HIGH);
@@ -66,7 +66,7 @@ int GSM::begin(long baud_rate){
 		}
 		else{
 			#ifdef DEBUG_ON
-				Serial.println("DB:ELSE");
+				debug.println("DB:ELSE");
 			#endif
 			norep=false;
 		}
@@ -74,12 +74,15 @@ int GSM::begin(long baud_rate){
 	
 	if (AT_RESP_OK == SendATCmdWaitResp("AT", 500, 100, "OK", 5)){
 		#ifdef DEBUG_ON
-			Serial.println("DB:CORRECT BR");
+			debug.println("DB:CORRECT BR");
 		#endif
 		turnedON=true;
 	}
 	if(cont==3&&norep){
-		Serial.println("Trying to force the baud-rate to 4800\n");
+#ifdef DEBUG_ON
+		debug.println("Trying to force the baud-rate to 4800\n");
+#endif
+/*
 		for (int i=0;i<8;i++){
 		switch (i) {
 			case 0:
@@ -123,14 +126,17 @@ int GSM::begin(long baud_rate){
 			  break;
 			}	
 		}
-		Serial.println("ERROR: SIM900 doesn't answer. Check power and serial pins in GSM.cpp");
+*/
+#ifdef DEBUG_ON
+		debug.println("ERROR: SIM900 doesn't answer. Check power and serial pins in GSM.cpp");
+#endif
 		return 0;
 	}
 
 
 	if (AT_RESP_ERR_DIF_RESP == SendATCmdWaitResp("AT", 500, 100, "OK", 5)&&!turnedON){		//check OK
 		#ifdef DEBUG_ON
-			Serial.println("DB:DIFF RESP");
+			debug.println("DB:DIFF RESP");
 		#endif
 		for (int i=0;i<8;i++){
 			switch (i) {
@@ -185,7 +191,7 @@ int GSM::begin(long baud_rate){
 
 			if (AT_RESP_OK == SendATCmdWaitResp("AT", 500, 100, "OK", 5)){
 				#ifdef DEBUG_ON
-					Serial.println("DB:FOUND PREV BR");
+					debug.println("DB:FOUND PREV BR");
 				#endif
 				_cell.print(F("AT+IPR="));
 				_cell.print(baud_rate);    
@@ -195,14 +201,14 @@ int GSM::begin(long baud_rate){
 				delay(100);
 				if (AT_RESP_OK == SendATCmdWaitResp("AT", 500, 100, "OK", 5)){
 					#ifdef DEBUG_ON
-						Serial.println("DB:OK BR");
+						debug.println("DB:OK BR");
 					#endif
 				}
 				turnedON=true;
 				break;					
 			}
 			#ifdef DEBUG_ON
-				Serial.println("DB:NO BR");
+				debug.println("DB:NO BR");
 			#endif			
 		}
 		// communication line is not used yet = free
@@ -449,9 +455,9 @@ byte GSM::IsRxFinished(void)
 	#ifdef DEBUG_GSMRX
 		
 			DebugPrint("\r\nDEBUG: reception timeout", 0);			
-			Serial.print((unsigned long)(millis() - prev_time));	
+			debug.print((unsigned long)(millis() - prev_time));	
 			DebugPrint("\r\nDEBUG: start_reception_tmout\r\n", 0);			
-			Serial.print(start_reception_tmout);	
+			debug.print(start_reception_tmout);	
 			
 		
 	#endif
@@ -518,9 +524,9 @@ byte GSM::IsRxFinished(void)
 	#ifdef DEBUG_GSMRX
 		
 			DebugPrint("\r\nDEBUG: intercharacter", 0);			
-<			Serial.print((unsigned long)(millis() - prev_time));	
+<			debug.print((unsigned long)(millis() - prev_time));	
 			DebugPrint("\r\nDEBUG: interchar_tmout\r\n", 0);			
-			Serial.print(interchar_tmout);	
+			debug.print(interchar_tmout);	
 			
 		
 	#endif
@@ -564,19 +570,20 @@ byte GSM::IsStringReceived(char const *compare_string)
 		#ifdef DEBUG_GSMRX
 			DebugPrint("DEBUG: Compare the string: \r\n", 0);
 			for (int i=0; i<comm_buf_len; i++){
-				Serial.print(byte(comm_buf[i]));	
+				debug.print(byte(comm_buf[i]));	
 			}
 			
 			DebugPrint("\r\nDEBUG: with the string: \r\n", 0);
-			Serial.print(compare_string);	
+			debug.print(compare_string);	
 			DebugPrint("\r\n", 0);
 		#endif
 	*/
 	#ifdef DEBUG_ON
-		Serial.println("ATT: ");
-		Serial.print(compare_string);
-		Serial.print("RIC: ");
-		Serial.println((char *)comm_buf);
+		debug.println("EXPECTED: ");
+		debug.print(compare_string);
+		debug.println();
+		debug.print("RECIEVED: ");
+		debug.print((char *)comm_buf);
 	#endif
     ch = strstr((char *)comm_buf, compare_string);
     if (ch != NULL) {
@@ -634,7 +641,7 @@ char GSM::InitSMSMemory(void)
   ret_val = 0; // not initialized yet
   
   // Disable messages about new SMS from the GSM module 
-  SendATCmdWaitResp("AT+CNMI=2,0", 1000, 50, "OK", 2);
+  SendATCmdWaitResp("AT+CNMI=0,0", 1000, 50, "OK", 2);
 
   // send AT command to init memory for SMS in the SIM card
   // response:

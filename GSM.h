@@ -1,8 +1,8 @@
 #ifndef GSM_H
 #define GSM_H
 
-#define UNO
-//#define MEGA
+//#define UNO
+#define MEGA
 
 #include <SoftwareSerial.h>
 #include <inttypes.h>
@@ -19,6 +19,9 @@
 
 //#define DEBUG_ON
 
+#ifdef DEBUG_ON
+extern SoftwareSerial debug;
+#endif
 
 #ifdef MEGA
 	#include "HWSerial.h"

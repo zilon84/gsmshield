@@ -31,11 +31,11 @@ char SMSGSM::SendSMS(char *number_str, char *message_str)
   char end[2];
   end[0]=0x1a;
   end[1]='\0';
-/*
+  
   if (CLS_FREE != gsm.GetCommLineStatus()) return (ret_val);
   gsm.SetCommLineStatus(CLS_ATCMD);  
-  ret_val = 0; // still not send
-*/
+//  ret_val = 0; // still not send
+
   // try to send SMS 3 times in case there is some problem
   for (i = 0; i < 1; i++) {
     // send  AT+CMGS="number_str"
@@ -44,31 +44,37 @@ char SMSGSM::SendSMS(char *number_str, char *message_str)
     gsm.SimpleWrite(number_str);  
     gsm.SimpleWriteln("\"");
     
-	#ifdef DEBUG_ON
-		Serial.println("DEBUG:SMS TEST");
-	#endif
     // 1000 msec. for initial comm tmout
     // 50 msec. for inter character timeout
-    if (RX_FINISHED_STR_RECV == gsm.WaitResp(1000, 500, ">")) {
-		#ifdef DEBUG_ON
-			Serial.println("DEBUG:>");
-		#endif
+    if (RX_FINISHED_STR_RECV == gsm.WaitResp(2000, 1000, ">")) {
+#ifdef DEBUG_ON
+      debug.print("DEBUG: Got input line, sending text >");
+      debug.println(message_str);
+#endif
       // send SMS text
       gsm.SimpleWrite(message_str); 
-      gsm.SimpleWriteln(end);
-	  //_cell.flush(); // erase rx circular buffer
+      gsm.SimpleWrite(end);
+      //_cell.flush(); // erase rx circular buffer
       if (RX_FINISHED_STR_RECV == gsm.WaitResp(7000, 5000, "+CMGS")) {
         // SMS was send correctly 
         ret_val = 1;
-
+#ifdef DEBUG_ON
+      debug.print("DEBUG: Got input line, sending text >");
+      debug.println(message_str);
+#endif
         break;
+      } else {
+#ifdef DEBUG_ON
+        debug.println("DEBUG: SMS Failed to receive +CMGS");
+#endif
+        continue;
       }
-      else continue;
-    }
-    else {
+    } else {
+#ifdef DEBUG_ON
+      debug.println("DEBUG: Failed to receive >");
+#endif
       // try again
       continue;
-
     }
   }
 
