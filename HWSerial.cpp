@@ -50,9 +50,9 @@
 	
 	
 	
-size_t HWSerial::print(const __FlashStringHelper *ifsh)
+size_t Print::print(const __FlashStringHelper *ifsh)
 {
-  const prog_char *p = (const prog_char *)ifsh;
+  const char PROGMEM *p = (const char PROGMEM *)ifsh;
   size_t n = 0;
   while (1) {
     unsigned char c = pgm_read_byte(p++);
